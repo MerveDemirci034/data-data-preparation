@@ -101,4 +101,22 @@ class Order:
         'distance_seller_customer']
         """
         # Hint: make sure to re-use your instance methods defined above
-        pass  # YOUR CODE HERE
+         # Temel özellikler
+        df = self.get_wait_time(is_delivered)
+    
+        # Review score
+        df = df.merge(self.get_review_score(), on='order_id', how='left')
+        
+        # Number of items
+        df = df.merge(self.get_number_items(), on='order_id', how='left')
+        
+        # Number of sellers
+        df = df.merge(self.get_number_sellers(), on='order_id', how='left')
+        
+        # Price ve freight
+        df = df.merge(self.get_price_and_freight(), on='order_id', how='left')
+        
+        # NaN kontrolü
+        df = df.dropna()  # boş değer varsa kaldır
+        
+        return df
