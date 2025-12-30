@@ -19,8 +19,24 @@ class Order:
         [order_id, wait_time, expected_wait_time, delay_vs_expected, order_status]
         and filters out non-delivered orders unless specified
         """
-        # Hint: Within this instance method, you have access to the instance of the class Order in the variable self, as well as all its attributes
-        pass  # YOUR CODE HERE
+        orders = self.data['orders'].copy()
+        
+        if is_delivered:
+            orders = orders[orders['order_status'] == 'delivered'].copy()
+        
+        orders['order_purchase_timestamp'] = pd.to_datetime(orders['order_purchase_timestamp'])
+        orders['order_delivered_customer_date'] = pd.to_datetime(orders['order_delivered_customer_date'])
+        orders['order_estimated_delivery_date'] = pd.to_datetime(orders['order_estimated_delivery_date'])
+        
+        orders['wait_time'] = (orders['order_delivered_customer_date'] - orders['order_purchase_timestamp']) / np.timedelta64(1, 'D')
+        orders['expected_wait_time'] = (orders['order_estimated_delivery_date'] - orders['order_purchase_timestamp']) / np.timedelta64(1, 'D')
+        
+        orders['delay_vs_expected'] = orders['wait_time'] - orders['expected_wait_time']
+        orders['delay_vs_expected'] = orders['delay_vs_expected'].apply(lambda x: x if x > 0 else 0)
+        
+        final_df = orders[['order_id', 'wait_time', 'expected_wait_time', 'delay_vs_expected', 'order_status']].copy()
+        
+        return final_df
 
     def get_review_score(self):
         """
