@@ -43,8 +43,16 @@ class Order:
         Returns a DataFrame with:
         order_id, dim_is_five_star, dim_is_one_star, review_score
         """
-        pass  # YOUR CODE HERE
+        reviews = self.data['order_reviews'].copy()
 
+        # Yeni sütunlar oluştur
+        reviews['dim_is_five_star'] = reviews['review_score'].map(lambda x: 1 if x == 5 else 0) # 5 ise 1 yaz değilse 0
+        reviews['dim_is_one_star'] = reviews['review_score'].map(lambda x: 1 if x == 1 else 0) # 1 ise 1 yaz değilse 0
+
+        # Sadece gerekli sütunları 
+        final_reviews = reviews[['order_id', 'dim_is_five_star', 'dim_is_one_star', 'review_score']].copy()
+        return final_reviews
+    
     def get_number_items(self):
         """
         Returns a DataFrame with:
