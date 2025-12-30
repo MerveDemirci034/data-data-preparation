@@ -1,4 +1,3 @@
-
 import pandas as pd
 import numpy as np
 from olist.data import Olist
@@ -142,7 +141,28 @@ class Seller:
         'seller_id', 'share_of_five_stars', 'share_of_one_stars', 'review_score'
         """
 
-        pass  # YOUR CODE HERE
+        # $CHALLENGIFY_BEGIN
+        orders_reviews = self.order.get_review_score()
+        orders_sellers = self.data['order_items'][['order_id', 'seller_id'
+                                                   ]].drop_duplicates()
+
+        df = orders_sellers.merge(orders_reviews, on='order_id')
+        res = df.groupby('seller_id', as_index=False).agg({
+            'dim_is_one_star':
+            'mean',
+            'dim_is_five_star':
+            'mean',
+            'review_score':
+            'mean'
+        })
+        # Rename columns
+        res.columns = [
+            'seller_id', 'share_of_one_stars', 'share_of_five_stars',
+            'review_score'
+        ]
+
+        return res
+        # $CHALLENGIFY_END
 
     def get_training_data(self):
         """
